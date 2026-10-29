@@ -166,7 +166,7 @@ test('upgrading preserves old artwork and maps the old high-energy choice to d',
   assert.deepEqual(n.answers.q05, old.answers.q05);
   assert.ok(n.legacyAnswers?.q01);
   assert.equal(n.answers.q01, undefined);
-  assert.equal(n.questionSetVersion, 2);
+  assert.equal(n.questionSetVersion, 3);
   assert.deepEqual(upgradeSession(n), n);
 });
 test('card themes change presentation without mutating conclusions', () => {

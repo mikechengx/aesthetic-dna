@@ -175,17 +175,30 @@ function herbarium(c: Context) {
     rule(64, 108, 965, 108, ink, 0.45) +
     txt(65, 159, CARD_SERIES[palette].english, 12, ochre, 'letter-spacing="3.8"');
   const title =
-    getCardProfile(s).label === '偏好集中型'
+    r.personal.cardTitle ??
+    (getCardProfile(s).label === '偏好集中型'
       ? ['熟悉之中，', '自有秩序。']
-      : p.label === '安静的编排者'
+      : getCardProfile(s).label === '安静的编排者'
         ? ['安静的表面，', '生长着想法。']
-        : p.label === '线索待展开'
+        : getCardProfile(s).label === '线索待展开'
           ? ['目光所至，', '仍有余地。']
-          : ['少一点声量，', '多一点分寸。'];
-  const size = Math.max(...title.map((x) => x.length)) > 6 ? 88 : 104;
+          : ['少一点声量，', '多一点分寸。']);
+  const size =
+    c.locale === 'en' && r.personal.cardTitle
+      ? Math.min(88, 900 / Math.max(...title.map((x) => x.length)) / 0.56)
+      : Math.max(...title.map((x) => x.length)) > 6
+        ? 88
+        : 104;
   b += title
     .map((v, i) =>
-      txt(58, 297 + i * 137, v, size, ink, `${serif} font-weight="600" letter-spacing="-5"`),
+      txt(
+        58,
+        297 + i * 137,
+        v,
+        size,
+        ink,
+        `${serif} font-weight="600" letter-spacing="${c.locale === 'en' ? -1 : -5}"`,
+      ),
     )
     .join('');
   b += `<g opacity=".96">${botanical(ink)}</g>`;
@@ -238,14 +251,24 @@ function photobook(c: Context) {
     rule(62, 110, 1019, 110, cream, 0.35) +
     txt(64, 161, 'THE PHOTOGRAPHIC ISSUE', 11, blue, 'letter-spacing="4"');
   const title =
-    p.label === '偏好集中型'
+    r.personal.cardTitle ??
+    (getCardProfile(s).label === '偏好集中型'
       ? ['熟悉的世界，', '再看深一点。']
-      : p.label === '安静的编排者'
+      : getCardProfile(s).label === '安静的编排者'
         ? ['安静地看，', '认真地改变。']
-        : ['把世界，', '看慢一点。'];
+        : ['把世界，', '看慢一点。']);
   b += title
     .map((v, i) =>
-      txt(54, 280 + i * 119, v, 94, cream, `${serif} font-weight="500" letter-spacing="-4"`),
+      txt(
+        54,
+        280 + i * 119,
+        v,
+        c.locale === 'en' && r.personal.cardTitle
+          ? Math.min(94, 940 / Math.max(...title.map((x) => x.length)) / 0.56)
+          : 94,
+        cream,
+        `${serif} font-weight="500" letter-spacing="${c.locale === 'en' ? -1 : -4}"`,
+      ),
     )
     .join('');
   b +=
@@ -402,12 +425,22 @@ export function editorialCard(
   forced?: CardPalette,
   locale: Locale = 'zh',
 ) {
+  const report = localizedReport(s, locale);
+  const individualCopy =
+    report.personal.insights.find((i) => i.id === 'motive')?.title ??
+    (report.personal.contexts.length >= 2
+      ? report.personal.contexts
+          .slice(0, 2)
+          .map((c) => c.label + ' / ' + c.variant)
+          .join(locale === 'zh' ? '；' : '; ')
+      : undefined);
   const canonical = getCardProfile(s),
     p = {
       ...canonical,
       label: translate(locale, canonical.label),
       description:
-        locale === 'en'
+        individualCopy ??
+        (locale === 'en'
           ? ({
               偏好集中型:
                 'Your choices share a clear rhythm. Your creations stayed close to their starting points. Try one step beyond the familiar.',
@@ -422,7 +455,7 @@ export function editorialCard(
               线索待展开:
                 'There is more to discover. Let a few more choices shape your point of view.',
             }[canonical.label] ?? translate(locale, canonical.description))
-          : canonical.description,
+          : canonical.description),
       keywords: canonical.keywords.map((k) => translate(locale, k)),
     },
     palette = forced ?? p.palette,
@@ -432,7 +465,7 @@ export function editorialCard(
       p,
       palette,
       t: CARD_PALETTES[palette],
-      r: localizedReport(s, locale),
+      r: report,
       assets,
     };
   const design =

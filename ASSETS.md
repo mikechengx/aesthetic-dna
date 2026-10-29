@@ -1,6 +1,6 @@
 # Artwork and source references
 
-This repository contains original SVG graphics and metadata linking to 16 official movie posters. It does not bundle third-party poster image files. Images load from publisher hosts at runtime. Links were checked on 2026-10-28; publishers may change them later.
+This repository contains original SVG graphics, four AI-generated photographic sources and metadata linking to 16 official movie posters. It does not bundle third-party poster image files. Images load from publisher hosts at runtime. Links were checked on 2026-10-28; publishers may change them later.
 
 ## Film posters
 
@@ -33,10 +33,10 @@ Movie artwork belongs to its respective rights holders. A link or attribution is
 - `src/cardDesigns.ts`: original botanical engraving-style graphics, geometric bursts and three editorial layouts. The leaf is decoration, not a biological inference from answers.
 - `public/favicon.svg`: original eye mark.
 - `tests/poster-fixture.mjs`: an original, clearly labeled test placeholder; never presented as a real movie poster.
-- `docs/images/result-series.png`: browser-rendered original cards based on fictional sessions; no real user data or third-party film artwork.
+- `docs/images/result-series.png`: browser-rendered cards with original graphics and generated photographic sources based on fictional sessions; no real user data or third-party film artwork.
 
-Activities, venues and screening copy are fictional. Fonts come from the operating system; no third-party font binaries are distributed. The scene is illustrated, not a photograph. Reference framing is predefined and does not imply AI object recognition.
+Activities, venues and screening copy are fictional. Fonts come from the operating system; no third-party font binaries are distributed. The new framing exercise uses realistic AI-generated images and fictional people, stored in `src/assets/photos.json` as optimized JPEG data URIs. Shanghai has eye-level and low-angle source images; the coast and alpine lake each have one source viewpoint. The low-angle Shanghai image was generated from the eye-level reference. These are prepared photographic scenarios, not real captured photos or a real-time 3D scene. The original illustrated scene remains for legacy saved frames. Reference framing is predefined and does not imply AI object recognition. Full specifications and prompts: [Photography assets](docs/PHOTOGRAPHY.md).
 
 ## 素材说明
 
-仓库只保留 16 张电影海报的官方链接、署名与浏览标签，不打包原图。电影海报版权归对应权利人，标注来源不代表商业再发行授权。电影年份与国别描述影片本身，不宣称海报具体发行版本。真实海报不进入原创作品或审美卡导出。其他场景、图形与卡面为项目原创；文档预览使用虚构测试作答，字体由系统提供。
+仓库只保留 16 张电影海报的官方链接、署名与浏览标签，不打包原图。电影海报版权归对应权利人，标注来源不代表商业再发行授权。电影年份与国别描述影片本身，不宣称海报具体发行版本。真实海报不进入原创作品或审美卡导出。新摄影场景由 imagegen 内置工具生成，人物虚构；其他图形与卡面为项目原创；文档预览使用虚构测试作答，字体由系统提供。

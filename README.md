@@ -4,7 +4,7 @@
 
 [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Artwork & sources](ASSETS.md)
 
-A playful, browser-based experiment about how you see the world. Choose real movie posters, frame an illustrated street scene, build a color story and compose a screening poster. Your choices become an evidence-based visual portrait with an editorial card to keep.
+A playful, browser-based experiment about how you see the world. Choose real movie posters, frame a realistic person or landscape, build a color story and compose a screening poster. Your choices become an evidence-based visual portrait with an editorial card to keep.
 
 ![Three original editorial portrait designs: Herbarium, Private View and Taste Manifesto](docs/images/result-series.png)
 
@@ -12,13 +12,17 @@ A playful, browser-based experiment about how you see the world. Choose real mov
 
 - **16 movie posters**, referenced from official publishers across France, the US, South Korea and Japan. Filter bold/maximal, clean/quiet, Japanese aesthetics or illustrated worlds. Each session shuffles the wall; keep up to three favorites.
 - **16 interactive steps** across composition, architecture, color, typography, fashion and texture. About 6–10 minutes.
+- **Photography on location:** choose Shanghai portraits by the Oriental Pearl Tower, a coastal traveler or an alpine lake. Switch between eye-level and low-angle Shanghai source views, choose a framing intention, then crop your own shot. All four source images are AI-generated with fictional people and bundled for offline exports. See [Photography scenes & prompts](docs/PHOTOGRAPHY.md).
+- **A closer look:** nine preference questions now have an optional, question-specific explanation. Repeated interests personalize your report without adding extra axis votes.
 - **Make things:** crop a scene, build a three-color palette, arrange a poster and restyle an outfit. Includes 38 colors, custom HEX input and eight palette starting points.
-- **A portrait with reasons:** preferences, creative focus and working approach link back to actual choices. Skips and unconfirmed drafts do not invent evidence.
+- **A portrait with reasons:** compare color choices across living spaces, outfits and posters; inspect the actual scene, viewpoint, retained frame area and color proportions. Recurring self-reported interests change headlines, card copy and next experiments. Preferences, creative focus and working approach link back to actual choices. Skips and unconfirmed drafts do not invent evidence.
 - **Three editorial card systems:** botanical Herbarium, photographic Private View and expressive Taste Manifesto, using a coherent palette matched to the session.
 - **English first, Chinese one click away.** The top-right language switch updates questions, reports, artwork labels and exports without losing progress.
 - **Local by design:** no login, API key or backend. Export your card and artworks as PNG, and the complete report as Markdown.
 
 The report is a playful interpretation of this experiment, not a validated personality test, creativity score or aesthetic ranking. Bright colors alone never imply creativity; active changes to creations are considered separately.
+
+![Photography studio with original AI-generated Shanghai, coast and alpine sources](docs/images/photo-studio.png)
 
 ## Run locally
 
@@ -53,6 +57,10 @@ src/
     report/                Evidence, creative portrait and card preview
   i18n/                    Locale context, English copy and report presentation
   styles/                  Responsive interface and editorial treatments
+  questionDetails.ts       Nine optional follow-ups and stable reason identifiers
+  photoScenarios.ts        Photo scenes, camera sources and framing presets
+  reportInsights.ts        Context comparisons and personal creation observations
+  assets/photos.json       Four bundled AI-generated photographic sources
   content.ts               Questions, semantic options and color stories
   posters.ts               Official poster URLs, credits and style metadata
   core.ts                  Session types, geometry and evidence-based rules
@@ -92,8 +100,8 @@ Only the latest experiment is retained. Export before starting again. Clearing s
 
 ## Artwork and current scope
 
-All experiment illustrations, botanical graphics and editorial layouts are original SVG compositions. The street scene is illustrated; the app does not use a camera, analyze uploaded photos or perform AI image recognition. Reference crops are predefined alternative framings.
+The photography exercise uses four AI-generated realistic images, with fictional people, across three scenes. Camera controls switch between prepared viewpoints; pan and zoom crop the active source. This version does not render an interactive 3D world or infer composition quality with image recognition. Earlier illustrated frames remain available in saved sessions. Other experiment illustrations, botanical graphics and editorial layouts are original SVG compositions. Reference crops are predefined alternative framings.
 
 Movie posters belong to their respective rights holders. This repository stores metadata and official image links, **not copies of movie poster binaries**, and does not grant rights to redistribute or commercially reuse them. Film origin labels identify the film, not a claimed poster edition or aesthetic score. Source details are in [ASSETS.md](ASSETS.md).
 
-The README preview uses fictional test sessions and original graphics only; it does not contain third-party movie posters or real user data.
+The README preview uses fictional test sessions and original graphics and AI-generated fictional photographic scenes only; it does not contain third-party movie posters or real user data.

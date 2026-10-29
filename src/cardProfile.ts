@@ -99,7 +99,9 @@ export function getCardProfile(s: Session): CardProfile {
       v.frozen &&
       v.intent &&
       v.intent !== '凭感觉' &&
-      (v.ratio !== d.ratio ||
+      (v.scene !== d.scene ||
+        v.camera !== d.camera ||
+        v.ratio !== d.ratio ||
         Math.abs(v.zoom - d.zoom) > 0.2 ||
         Math.abs(v.panX - d.panX) > 0.1 ||
         Math.abs(v.panY - d.panY) > 0.1)

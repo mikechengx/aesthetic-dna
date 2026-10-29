@@ -1,14 +1,14 @@
 {
   "name": "aesthetic-dna",
   "private": true,
-  "version": "3.0.0",
+  "version": "3.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build && node scripts/standalone.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "test:e2e": "node tests/e2e.mjs && node tests/bilingual.e2e.mjs",
+    "test:e2e": "node tests/e2e.mjs && node tests/bilingual.e2e.mjs && node tests/photo-personal.e2e.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

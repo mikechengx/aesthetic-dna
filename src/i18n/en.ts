@@ -669,3 +669,12 @@ export const EN: Record<string, string> = {
     'This edition references 16 official film posters, loaded from publishers with source credits. All other illustrations and layouts are original. Results are playful interpretations of this session, not a validated psychological assessment.',
 };
 EN['主动排版'] = 'Hands-on layout';
+
+EN['这一张，你会怎样拍？'] = 'How would you take this photograph?';
+EN['东方明珠人像、海岸旅行、山湖风景。选择场景与机位，再留下你的那一帧。'] =
+  'Shanghai portraits, coastal journeys and alpine landscapes. Choose a scene and viewpoint, then make your frame.';
+
+EN[
+  '本版收录 16 部电影的官方海报链接，保留作品署名与来源；海报从发行方加载，版权归原权利人。摄影练习使用 AI 生成的写实场景与虚构人物，其余为项目原创插画与排版。未经测评常模验证，结果描述本次选择与创作，性格感为趣味解读。'
+] =
+  'This edition references 16 official film posters, loaded from publishers with source credits. Photography exercises use AI-generated realistic scenes and fictional people; other illustrations and layouts are original. Results are playful interpretations of this session, not a validated psychological assessment.';

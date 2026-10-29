@@ -1,9 +1,12 @@
+import { personalReport } from '../reportInsights.ts';
+import { choiceReason } from '../questionDetails.ts';
+import { photoScene, photoView } from '../photoScenarios.ts';
 import { COLOR_VARIANTS, QUESTIONS } from '../content.ts';
 import { analyze, cropRect, type Evidence, type Session } from '../core.ts';
 import { POSTERS } from '../posters.ts';
 import { translate, type Locale } from './translate.ts';
 /** Localized presentation model; canonical evidence, IDs and scores are unchanged. */
-export function localizedReport(
+function baseLocalizedReport(
   s: Session,
   locale: Locale = 'zh',
 ): Omit<ReturnType<typeof analyze>, 'keywords'> & { keywords: string[] } {
@@ -17,13 +20,17 @@ export function localizedReport(
     if (a.type === 'pair') {
       const variant = COLOR_VARIANTS.find((v) => v.id === a.value);
       const axis = r.axes.find((ax) => ax.id === q.axis)!;
-      fact = `For “${t(q.title)}” you chose ${q.colorVariants ? t(variant!.label) : t((e.value ?? 0) < 0 ? axis.left : axis.right).toLowerCase()}.`;
+      if (e.id.endsWith('-reason')) {
+        const reason = choiceReason(q.id, a.reason);
+        fact = `You said this choice works because “${reason?.english ?? ''}”. This explanation does not add another preference-axis vote.`;
+      } else
+        fact = `For “${t(q.title)}” you chose ${q.colorVariants ? t(variant!.label) : t((e.value ?? 0) < 0 ? axis.left : axis.right).toLowerCase()}.`;
     }
     if (a.type === 'archive')
       fact = `You would hang ${a.value.ids.map((id) => POSTERS.find((p) => p.id === id)?.titleEn ?? id).join(', ')}.${a.value.why ? ` What caught your eye: ${t(a.value.why)}.` : ''} This records whole-poster preference, not a single color or composition skill.`;
     if (a.type === 'crop') {
       const rect = cropRect(a.value);
-      fact = `You used a ${a.value.ratio} frame, keeping about ${Math.round(((rect.w * rect.h) / 1080000) * 100)}% of the scene.${a.value.intent ? ` Your intention: ${t(a.value.intent)}.` : ''}`;
+      fact = `${photoScene(a.value) ? `Scene: ${photoScene(a.value)!.english}. Viewpoint: ${photoView(a.value)!.english}. ` : ''}You used a ${a.value.ratio} frame, keeping about ${Math.round(((rect.w * rect.h) / 1080000) * 100)}% of the scene.${a.value.intent ? ` Your intention: ${t(a.value.intent)}.` : ''}`;
     }
     if (a.type === 'palette')
       fact = `For “quiet, never boring,” you assigned your three colors ${a.value.areas.join(' / ')} percent of the space.`;
@@ -94,5 +101,18 @@ export function localizedReport(
       tagline: t(r.temperament.tagline),
       text: t(r.temperament.text),
     },
+  };
+}
+
+export function localizedReport(s: Session, locale: Locale = 'zh') {
+  const base = baseLocalizedReport(s, locale),
+    personal = personalReport(s, analyze(s), locale);
+  const exercises = [...personal.nextSteps.map((p) => p.text), ...base.exercises].slice(0, 3);
+  return {
+    ...base,
+    personal,
+    title: personal.headline ?? base.title,
+    titleEvidenceIds: personal.headline ? personal.headlineEvidenceIds : base.titleEvidenceIds,
+    exercises,
   };
 }

@@ -1,3 +1,4 @@
+import { photoSource } from './photoScenarios.ts';
 import { editorialCard } from './cardDesigns.ts';
 import { CARD_PALETTES, type CardPalette } from './cardProfile.ts';
 import type { VisualChoice } from './content.ts';
@@ -51,7 +52,11 @@ ${rect(111, 668, 60, 99, '#aa7253')}<path d="M141 681V540M142 608Q75 577 83 533Q
 export const streetSVG = () => svg(1200, 900, streetBody());
 export function cropSVG(c: Crop) {
   const r = cropRect(c);
-  return svg(Math.round((1000 * r.w) / r.h), 1000, streetBody(), `${r.x} ${r.y} ${r.w} ${r.h}`);
+  const source = photoSource(c);
+  const body = source
+    ? `<image href="${source}" x="0" y="0" width="1200" height="900" preserveAspectRatio="none"/>`
+    : streetBody();
+  return svg(Math.round((1000 * r.w) / r.h), 1000, body, `${r.x} ${r.y} ${r.w} ${r.h}`);
 }
 function room(loud: boolean) {
   const p = loud

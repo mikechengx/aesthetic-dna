@@ -1,3 +1,5 @@
+import { photoScene, photoView } from './photoScenarios.ts';
+import { choiceReason } from './questionDetails.ts';
 import {
   AXES,
   COLOR_STORIES,
@@ -8,6 +10,8 @@ import {
 } from './content.ts';
 import { POSTERS } from './posters.ts';
 export type Crop = {
+  scene?: 'shanghai' | 'coast' | 'mountains';
+  camera?: 'eye' | 'low';
   ratio: string;
   zoom: number;
   panX: number;
@@ -27,7 +31,7 @@ export type Poster = {
   custom: boolean;
 };
 export type Answer =
-  | { type: 'pair'; value: VisualChoice | 'both' | 'neither' }
+  | { type: 'pair'; value: VisualChoice | 'both' | 'neither'; reason?: string }
   | { type: 'archive'; value: { ids: string[]; why: string } }
   | { type: 'crop'; value: Crop }
   | { type: 'palette'; value: Palette }
@@ -63,8 +67,10 @@ export interface Claim {
   evidenceIds: string[];
 }
 export const defaultCrop = (): Crop => ({
+  scene: 'shanghai',
+  camera: 'eye',
   ratio: '4:3',
-  zoom: 1.2,
+  zoom: 1,
   panX: 0.5,
   panY: 0.5,
   intent: '',
@@ -89,8 +95,8 @@ export function newSession(): Session {
   return {
     id: crypto.randomUUID(),
     version: 1,
-    analysisVersion: 2,
-    questionSetVersion: 2,
+    analysisVersion: 3,
+    questionSetVersion: 3,
     createdAt: new Date().toISOString(),
     step: 0,
     done: false,
@@ -100,7 +106,10 @@ export function newSession(): Session {
   };
 }
 export function upgradeSession(s: Session): Session {
-  if ((s.questionSetVersion ?? 1) >= 2) return s;
+  if ((s.questionSetVersion ?? 1) >= 2)
+    return s.analysisVersion === 3 && s.questionSetVersion === 3
+      ? s
+      : { ...s, analysisVersion: 3, questionSetVersion: 3 };
   const map = (a: Record<string, Answer>) =>
     Object.fromEntries(
       Object.entries(a)
@@ -114,8 +123,8 @@ export function upgradeSession(s: Session): Session {
     );
   return {
     ...s,
-    analysisVersion: 2,
-    questionSetVersion: 2,
+    analysisVersion: 3,
+    questionSetVersion: 3,
     answers: map(s.answers),
     drafts: map(s.drafts ?? {}),
     legacyAnswers: { ...s.answers },
@@ -148,6 +157,15 @@ export function extract(s: Session): Evidence[] {
         fact: `你在「${q.title}」中选择了${q.colorVariants ? `「${variant?.label}」` : `更${v < 0 ? axis.left : axis.right}`}的版本。`,
       });
     }
+    if (a.type === 'pair' && ['a', 'b', 'c', 'd'].includes(a.value)) {
+      const reason = choiceReason(q.id, a.reason);
+      if (reason)
+        e.push({
+          id: q.id + '-reason',
+          questionId: q.id,
+          fact: `你说这次留下它，是因为「${reason.label}」。这是一条自述理由，不额外计为方向证据。`,
+        });
+    }
     if (a.type === 'archive')
       e.push({
         id: q.id + '-archive',
@@ -159,7 +177,7 @@ export function extract(s: Session): Evidence[] {
       e.push({
         id: q.id + '-crop',
         questionId: q.id,
-        fact: `你使用 ${a.value.ratio} 画幅，保留原场景约 ${Math.round(((r.w * r.h) / 1080000) * 100)}% 的面积${a.value.intent ? `，想要「${a.value.intent}」` : ''}。`,
+        fact: `${photoScene(a.value) ? `你在「${photoScene(a.value)!.name}」选择了「${photoView(a.value)!.name}」。` : ''}你使用 ${a.value.ratio} 画幅，保留原场景约 ${Math.round(((r.w * r.h) / 1080000) * 100)}% 的面积${a.value.intent ? `，想要「${a.value.intent}」` : ''}。`,
       });
     }
     if (a.type === 'palette')

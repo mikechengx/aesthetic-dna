@@ -1,3 +1,5 @@
+import { PersonalDetails } from './PersonalDetails.tsx';
+import { referenceCrop } from '../../photoScenarios.ts';
 import { useState } from 'react';
 import { contrast, cropSVG, paletteSVG, posterSVG, shareSVG } from '../../art.ts';
 import { Art, Eye, Tag } from '../../components/ui.tsx';
@@ -60,14 +62,12 @@ export function Report({
   const [reference, setReference] = useState(false);
   const [practice, setPractice] = useState(false);
   const [practiceDraft, setPracticeDraft] = useState<Answer>();
-  const refCrop: Crop = {
-    ratio: '4:3',
-    zoom: 1.9,
-    panX: 0.17,
-    panY: 0.58,
-    intent: '让主体更突出',
-    frozen: true,
-  };
+  const refCrop: Crop = referenceCrop(
+    crop?.type === 'crop'
+      ? crop.value
+      : { ratio: '4:3', zoom: 1, panX: 0.5, panY: 0.5, intent: '', frozen: false },
+  );
+
   return (
     <main className="report">
       <div className="report-nav">
@@ -112,6 +112,7 @@ export function Report({
           <span>↓</span>
         </button>
       </section>
+      <PersonalDetails report={r.personal} edit={edit} />
       <ShareCardStudio s={s} onExport={onExport} />
       <section className="report-section">
         <div className="section-title">

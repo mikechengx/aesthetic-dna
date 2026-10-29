@@ -1,6 +1,6 @@
-import { streetSVG } from '../../art.ts';
+import { cropSVG } from '../../art.ts';
 import { Arrow, Art } from '../../components/ui.tsx';
-import { defaultPalette, type Session } from '../../core.ts';
+import { defaultPalette, defaultCrop, type Session } from '../../core.ts';
 import { useI18n } from '../../i18n/index.tsx';
 import { POSTERS } from '../../posters.ts';
 import { PosterImage } from '../posters/PosterImage.tsx';
@@ -92,7 +92,14 @@ export function Home({
         <section className="hero-art" aria-label={tr('取景、海报与配色的创作示例')}>
           <div className="orbit-text">YOUR EYES. YOUR RULES.</div>
           <div className="hero-image">
-            <Art source={streetSVG()} alt={tr('原创街角插画：绿窗、暖色墙面、路人与咖啡桌')} />
+            <Art
+              source={cropSVG(defaultCrop())}
+              alt={
+                locale === 'zh'
+                  ? '东方明珠旁的人物取景练习，AI 生成写实素材'
+                  : 'A person and the Oriental Pearl Tower, an AI-generated framing scenario'
+              }
+            />
             <div className="viewfinder">
               <i />
               <i />

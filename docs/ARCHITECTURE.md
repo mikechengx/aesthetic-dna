@@ -16,7 +16,7 @@ Canonical evidence + preference analysis
         └─ card profile + original SVG layouts → preview / PNG
 ```
 
-`App.tsx` owns the latest session and hash navigation. Feature screens receive narrow callbacks. The four making studios keep recoverable drafts with `useDraft`; a draft enters `answers` only after confirmation. Report analysis reads `answers`, never unfinished drafts.
+`App.tsx` owns the latest session and hash navigation. Feature screens receive narrow callbacks. The four making studios keep recoverable drafts with `useDraft`; a draft enters `answers` only after confirmation. Report analysis reads `answers`, never unfinished drafts. Optional question-specific reasons are stored on confirmed pair answers; choosing another visual clears its previous reason.
 
 ## Module boundaries
 
@@ -42,6 +42,8 @@ Canonical evidence + preference analysis
 English is the default. `LocaleProvider` persists `en` or `zh` under a separate localStorage key and updates document language and title. The top-right control changes only presentation; it never remounts a question or resets the session.
 
 The inherited question bank and semantic intent strings remain canonical Chinese values. They are internal identifiers, not the display language. `i18n/en.ts` translates display copy; `localizedReport` reconstructs dynamic English evidence from typed answers and the same IDs and scores. Domain functions remain independent of React and browser locale. User-entered names are retained as entered.
+
+`reportInsights.ts` compares the actual four-way color variants by context, rather than flattening different settings into the same average. At least two explanations with a shared interest can support a recurring self-reported motive; ties do not declare a dominant motive. Their descriptive evidence has no axis value. New headlines cite the corresponding context or reason evidence. Creation observations use the exact confirmed camera, frame geometry and palette proportions. These observations and tailored exercises are included in both Markdown exports.
 
 The result SVG receives an explicit locale. The expressive card has an English `IDEAS / OFF SCRIPT` typographic treatment, English paragraphs wrap at word boundaries, and generated labels remain XML-escaped. Third-party film poster artwork is never translated or modified.
 
@@ -72,7 +74,7 @@ Publisher images are remote, lazy-loaded and requested with `no-referrer`. Faile
 
 ## Exports and deployment
 
-PNG export rasterizes original SVG work in a browser canvas after fonts are ready. No external poster images enter the canvas, preventing cross-origin contamination. The editorial card is an interpretation; original work and colors remain independently downloadable from the report.
+PNG export rasterizes original SVG work in a browser canvas after fonts are ready. Bundled photographic sources are embedded as image data URIs inside the original crop SVG. No external poster images enter the canvas, preventing cross-origin contamination. The editorial card is an interpretation; original work and colors remain independently downloadable from the report.
 
 Markdown receives the current locale and includes all evidence IDs, conclusions, exercises and artwork download names. The app remains a static bundle. Vite uses relative asset paths; `scripts/standalone.mjs` additionally embeds the compiled application into one HTML file. This file still references remote movie posters and needs network access for them.
 
@@ -83,3 +85,7 @@ Domain tests cover geometric bounds, skipped/default behavior, evidence integrit
 ## Extending the app
 
 Add a poster by supplying official URLs and credits in `posters.ts`. Add a question in `content.ts` together with explicit evidence rules and English copy. Changing the semantic question structure requires a migration. New card treatments belong in `cardDesigns.ts`, with their palette decisions in `cardProfile.ts`. Keep report interpretation traceable to existing evidence; avoid inferring abilities from color preference or a missing answer.
+
+## Photography compatibility
+
+New crop records carry optional `scene` and `camera` IDs. Missing scene IDs explicitly select the legacy illustrated scene; upgrading never injects a new image into an old frame. New framing defaults use the Shanghai eye-level source. Camera or scene changes reset the frame and require confirmation; crop edits also unfreeze it. Prepared framing presets preserve the chosen scene and camera. Reference crops and practice copies derive from the submitted source rather than a global default. The normalized geometry remains 1200 × 900 for all four sources.

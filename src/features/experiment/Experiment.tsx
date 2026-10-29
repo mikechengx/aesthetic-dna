@@ -1,3 +1,4 @@
+import { QUESTION_DETAILS } from '../../questionDetails.ts';
 import { useState } from 'react';
 import { pairSVG } from '../../art.ts';
 import { Arrow, Art } from '../../components/ui.tsx';
@@ -24,6 +25,8 @@ export function PairQuestion({
   const { tr, locale } = useI18n();
 
   const value = answer?.type === 'pair' ? answer.value : '';
+  const detail = QUESTION_DETAILS[q.id];
+  const selectedReason = answer?.type === 'pair' ? answer.reason : undefined;
   const base: VisualChoice[] = q.colorVariants ? ['a', 'b', 'c', 'd'] : ['a', 'b'];
   const choices = flip ? [...base].reverse() : base;
   return (
@@ -33,7 +36,13 @@ export function PairQuestion({
           <button
             key={side}
             className={`visual-choice ${value === side ? 'selected' : ''}`}
-            onClick={() => onChange({ type: 'pair', value: side })}
+            onClick={() =>
+              onChange({
+                type: 'pair',
+                value: side,
+                ...(value === side && selectedReason ? { reason: selectedReason } : {}),
+              })
+            }
             data-choice={side}
             aria-pressed={value === side}
           >
@@ -62,6 +71,42 @@ export function PairQuestion({
           </button>
         ))}
       </div>
+      {detail && ['a', 'b', 'c', 'd'].includes(value) && (
+        <section
+          className="choice-followup"
+          aria-label={locale === 'en' ? 'A closer look at your choice' : '多看一层你的选择'}
+        >
+          <div>
+            <span className="eyebrow">A CLOSER LOOK</span>
+            <h2>{locale === 'en' ? detail.english : detail.prompt}</h2>
+            <p>
+              {locale === 'en'
+                ? 'Optional. The same image can mean different things to different people.'
+                : '可跳过。同一张图，也可能因为不同的理由被喜欢。'}
+            </p>
+          </div>
+          <div className="reason-options">
+            {detail.reasons.map((reason) => (
+              <button
+                key={reason.id}
+                data-reason={reason.id}
+                aria-pressed={selectedReason === reason.id}
+                className={selectedReason === reason.id ? 'active' : ''}
+                onClick={() =>
+                  onChange({
+                    type: 'pair',
+                    value: value as VisualChoice,
+                    reason: selectedReason === reason.id ? undefined : reason.id,
+                  })
+                }
+              >
+                <span>{locale === 'en' ? reason.english : reason.label}</span>
+                <i>{selectedReason === reason.id ? '✓' : '+'}</i>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
       <div className="neutral-choices">
         {(['both', 'neither'] as const).map((v, i) => (
           <button
@@ -170,7 +215,7 @@ export function QuestionView({
         <h1>{tr(q.title)}</h1>
         <p>{tr(q.subtitle)}</p>
       </div>
-      <div className="question-body">
+      <div className={q.kind === 'crop' ? 'question-body photography-body' : 'question-body'}>
         {q.kind === 'archive' ? (
           <ArchiveQuestion seed={s.id} initial={draft} onChange={update} />
         ) : q.kind === 'pair' ? (
