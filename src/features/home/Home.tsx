@@ -1,6 +1,6 @@
-import { cropSVG } from '../../art.ts';
-import { Arrow, Art } from '../../components/ui.tsx';
-import { defaultPalette, defaultCrop, type Session } from '../../core.ts';
+import { TasteCover } from './TasteCover.tsx';
+import { Arrow } from '../../components/ui.tsx';
+import { defaultPalette, type Session } from '../../core.ts';
 import { useI18n } from '../../i18n/index.tsx';
 import { POSTERS } from '../../posters.ts';
 import { PosterImage } from '../posters/PosterImage.tsx';
@@ -89,27 +89,17 @@ export function Home({
             <span>{tr('无需注册')}</span>
           </div>
         </section>
-        <section className="hero-art" aria-label={tr('取景、海报与配色的创作示例')}>
+        <section
+          className="hero-art"
+          aria-label={
+            locale === 'zh'
+              ? '审美实验的原创图形封面'
+              : 'Original graphic cover for the visual experiment'
+          }
+        >
           <div className="orbit-text">YOUR EYES. YOUR RULES.</div>
-          <div className="hero-image">
-            <Art
-              source={cropSVG(defaultCrop())}
-              alt={
-                locale === 'zh'
-                  ? '东方明珠旁的人物取景练习，AI 生成写实素材'
-                  : 'A person and the Oriental Pearl Tower, an AI-generated framing scenario'
-              }
-            />
-            <div className="viewfinder">
-              <i />
-              <i />
-              <i />
-              <i />
-              <div className="focus-cross">＋</div>
-            </div>
-            <div className="image-label">
-              <span className="record-dot" /> FIND YOUR OWN FRAME <span>01 / 03</span>
-            </div>
+          <div className="hero-image graphic-cover">
+            <TasteCover />
           </div>
           <div className="floating-poster">
             <PosterImage poster={POSTERS[1]} eager />

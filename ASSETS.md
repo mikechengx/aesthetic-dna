@@ -32,6 +32,7 @@ Movie artwork belongs to its respective rights holders. A link or attribution is
 - `src/art.ts`: the street scene, interiors, architecture, fashion, materials, courtyard, original screening posters, observation pairs, palette cards and crop SVGs.
 - `src/cardDesigns.ts`: original botanical engraving-style graphics, geometric bursts and three editorial layouts. The leaf is decoration, not a biological inference from answers.
 - `public/favicon.svg`: original eye mark.
+- `src/features/home/TasteCover.tsx`: original vector eye cover for the homepage; separate from photography exercise sources.
 - `tests/poster-fixture.mjs`: an original, clearly labeled test placeholder; never presented as a real movie poster.
 - `docs/images/result-series.png`: browser-rendered cards with original graphics and generated photographic sources based on fictional sessions; no real user data or third-party film artwork.
 
