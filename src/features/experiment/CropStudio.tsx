@@ -6,6 +6,7 @@ import {
   framingPresets,
   type SceneId,
 } from '../../photoScenarios.ts';
+import { CAMERA_POSITIONS, cameraRig, renderPhotoWorld, type CameraRig } from '../../photoWorld.ts';
 import { useRef, useState } from 'react';
 import { cropSVG } from '../../art.ts';
 import { Art } from '../../components/ui.tsx';
@@ -26,7 +27,7 @@ export function CropEditor({
   const { tr, locale } = useI18n();
   const l = (zh: string, en: string) => (locale === 'zh' ? zh : en);
 
-  const [c, setC] = useDraft<Crop>(initial ?? defaultCrop(), (value) =>
+  const [c, setC] = useDraft<Crop>(initial ?? { ...defaultCrop(), rig: cameraRig() }, (value) =>
     onChange({ type: 'crop', value }),
   );
   const scene = photoScene(c),
@@ -35,21 +36,49 @@ export function CropEditor({
   const [panel, setPanel] = useState<'frame' | 'camera' | 'focus'>('frame');
   const drag = useRef<{ x: number; y: number } | null>(null);
   const change = (p: Partial<Crop>) => setC((old) => ({ ...old, ...p, frozen: false }));
+  const moveCamera = (patch: Partial<CameraRig>) =>
+    change({ rig: { ...(c.rig ?? cameraRig(c.camera)), ...patch } });
   const aspect = c.ratio
     .split(':')
     .map(Number)
     .reduce((a, b) => a / b);
   return (
     <div className="photo-experiment">
+      {!c.rig && (
+        <div className="photo-upgrade">
+          <p>
+            {l(
+              '这是一张旧版取景记录。可以保留，也可以进入新的三维场景自己拍。',
+              'This is an earlier framing record. Keep it, or enter the 3D scene to take your own photograph.',
+            )}
+          </p>
+          <button
+            className="primary"
+            onClick={() =>
+              setC({ ...defaultCrop(), scene: c.scene ?? 'shanghai', rig: cameraRig() })
+            }
+          >
+            {l('进入自主拍摄 →', 'Enter the camera scene →')}
+          </button>
+        </div>
+      )}
       <div className="photo-scene-tabs" aria-label={l('选择摄影场景', 'Choose a photo scenario')}>
         {PHOTO_SCENES.map((item, i) => (
           <button
             key={item.id}
             data-scene={item.id}
             aria-pressed={c.scene === item.id}
-            onClick={() => setC({ ...defaultCrop(), scene: item.id as SceneId })}
+            onClick={() => setC({ ...defaultCrop(), scene: item.id as SceneId, rig: cameraRig() })}
           >
-            <img src={photoSource({ scene: item.id, camera: 'eye' })} alt="" />
+            <img
+              src={
+                'data:image/svg+xml;charset=utf-8,' +
+                encodeURIComponent(
+                  renderPhotoWorld({ ...defaultCrop(), scene: item.id, rig: cameraRig() }),
+                )
+              }
+              alt=""
+            />
             <span>
               <small>0{i + 1}</small>
               <b>{l(item.name, item.english)}</b>
@@ -69,8 +98,8 @@ export function CropEditor({
         </h2>
         <p>
           {l(
-            '先选机位，再决定想强调什么。取景起点可继续调整，没有唯一标准答案。',
-            'Choose a viewpoint, then decide what matters. Every framing preset is a starting point, not a correct answer.',
+            '走动找机位，拖动镜头转向，调整焦距。由你决定人物和环境的关系，再按下快门。',
+            'Walk to your viewpoint, drag to aim and adjust the lens. Decide how the person and setting relate, then release the shutter.',
           )}
         </p>
       </div>
@@ -92,6 +121,13 @@ export function CropEditor({
               const dx = e.clientX - drag.current.x,
                 dy = e.clientY - drag.current.y;
               drag.current = { x: e.clientX, y: e.clientY };
+              if (c.rig) {
+                moveCamera({
+                  yaw: clamp(c.rig.yaw - dx / 300, -1.2, 1.2),
+                  pitch: clamp(c.rig.pitch + dy / 300, -0.7, 0.7),
+                });
+                return;
+              }
               setC((o) => ({
                 ...o,
                 panX: clamp(o.panX - dx / 250, 0, 1),
@@ -116,7 +152,11 @@ export function CropEditor({
             {c.frozen && <span className="frozen-label">{tr('✓ 就这一帧')}</span>}
           </div>
           <span className="canvas-caption">
-            {scene ? l('AI 写实场景 ·', 'AI-generated photo scenario ·') : tr('原创场景插画 ·')}
+            {c.rig
+              ? l('3D 实时取景 ·', '3D live view ·')
+              : scene
+                ? l('旧版照片 ·', 'Earlier photo ·')
+                : tr('原创场景插画 ·')}
             {tr(c.frozen ? '已定格' : '拖动画面，寻找你的视角')}
           </span>
         </div>
@@ -147,28 +187,101 @@ export function CropEditor({
                   <small>{l('切换原始视角', 'Change the source view')}</small>
                 </div>
                 <div className="camera-options">
-                  {scene.viewpoints.map((v) => (
+                  {(c.rig
+                    ? CAMERA_POSITIONS.map((v) => ({ ...v, name: v.zh, english: v.en }))
+                    : scene.viewpoints
+                  ).map((v) => (
                     <button
                       key={v.id}
                       data-camera={v.id}
-                      className={view?.id === v.id ? 'active' : ''}
-                      aria-pressed={view?.id === v.id}
-                      onClick={() => setC({ ...defaultCrop(), scene: scene.id, camera: v.id })}
+                      className={c.camera === v.id ? 'active' : ''}
+                      aria-pressed={c.camera === v.id}
+                      onClick={() =>
+                        setC({
+                          ...defaultCrop(),
+                          scene: scene.id,
+                          camera: v.id,
+                          ...(c.rig ? { rig: cameraRig(v.id) } : {}),
+                        })
+                      }
                     >
                       {l(v.name, v.english)}
-                      <span>{view?.id === v.id ? '●' : '○'}</span>
+                      <span>{c.camera === v.id ? '●' : '○'}</span>
                     </button>
                   ))}
                 </div>
-                <p className="camera-note">{view ? l(view.note, view.noteEn) : ''}</p>
+                {c.rig ? (
+                  <>
+                    <p className="camera-note">
+                      {l(
+                        '起始机位可继续走动；拖动预览转动镜头。',
+                        'Keep walking from any starting point. Drag the view to aim.',
+                      )}
+                    </p>
+                    <label className="range-label">
+                      {l('相机高度', 'Camera height')}
+                      <span>{c.rig.height.toFixed(2)} m</span>
+                      <input
+                        aria-label={l('相机高度', 'Camera height')}
+                        type="range"
+                        min=".2"
+                        max="5"
+                        step=".05"
+                        value={c.rig.height}
+                        onChange={(e) => moveCamera({ height: +e.target.value })}
+                      />
+                    </label>
+                    <div className="camera-walk">
+                      {(
+                        [
+                          ['←', -0.5, 0],
+                          ['↑', 0, 0.5],
+                          ['↓', 0, -0.5],
+                          ['→', 0.5, 0],
+                        ] as const
+                      ).map(([label, x, z]) => (
+                        <button
+                          key={label}
+                          aria-label={l(`走动${label}`, `Walk ${label}`)}
+                          onClick={() =>
+                            moveCamera({
+                              x: clamp(c.rig!.x + x, -7, 7),
+                              z: clamp(c.rig!.z + z, -16, -2.5),
+                            })
+                          }
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                    <small>
+                      {l('站位', 'Position')} X {c.rig.x.toFixed(1)} / Z {c.rig.z.toFixed(1)} m
+                    </small>
+                  </>
+                ) : (
+                  <p className="camera-note">{view ? l(view.note, view.noteEn) : ''}</p>
+                )}
               </div>
               <div className="photo-control-panel" data-panel="focus">
                 <span className="control-title">
                   {l('这张图，你想突出哪里？', 'What should this frame emphasize?')}
+                  {c.rig && (
+                    <small className="focus-hint">
+                      {l(
+                        '只记录意图，画面由你自己走位、转向和调焦完成。',
+                        'This records your intention. Position, aim and lens are yours to set.',
+                      )}
+                    </small>
+                  )}
                 </span>
                 <div className="framing-presets">
                   {framingPresets(c).map((p) => (
-                    <button key={p.id} data-framing={p.id} onClick={() => change(p.crop)}>
+                    <button
+                      key={p.id}
+                      data-framing={p.id}
+                      aria-pressed={c.intent === p.crop.intent}
+                      onClick={() => (c.rig ? change({ intent: p.crop.intent }) : change(p.crop))}
+                    >
                       <span>{l(p.name, p.english)}</span>
                       <i>↗</i>
                     </button>
@@ -182,7 +295,14 @@ export function CropEditor({
               <span>{tr('画幅比例')}</span>
               <button
                 className="text-button"
-                onClick={() => setC({ ...defaultCrop(), scene: c.scene, camera: c.camera })}
+                onClick={() =>
+                  setC({
+                    ...defaultCrop(),
+                    scene: c.scene,
+                    camera: c.camera,
+                    ...(c.rig ? { rig: cameraRig(c.camera) } : {}),
+                  })
+                }
               >
                 {tr('重置 ↻')}
               </button>
@@ -200,8 +320,8 @@ export function CropEditor({
               ))}
             </div>
             <label className="range-label">
-              {tr('靠近一点')}
-              <span>{tr(c.zoom.toFixed(1))}×</span>
+              {c.rig ? l('镜头焦距', 'Lens focal length') : tr('靠近一点')}
+              <span>{c.rig ? `${Math.round(28 * c.zoom)} mm` : `${c.zoom.toFixed(1)}×`}</span>
               <input
                 aria-label={tr('取景缩放')}
                 type="range"
@@ -213,7 +333,7 @@ export function CropEditor({
               />
             </label>
             <div className="move-controls">
-              <span>{tr('移动取景')}</span>
+              <span>{c.rig ? l('镜头转向', 'Aim camera') : tr('移动取景')}</span>
               <div>
                 {[
                   ['←', -0.08, 0],
@@ -241,8 +361,16 @@ export function CropEditor({
               {tr('显示三分辅助线')}
             </label>
           </div>
-          <button className="primary" onClick={() => setC((o) => ({ ...o, frozen: true }))}>
-            {tr(c.frozen ? '重新确认这一帧' : '就这一帧')} <span>⌁</span>
+          <button
+            className="primary"
+            onClick={() => setC((o) => ({ ...o, frozen: c.rig ? !o.frozen : true }))}
+          >
+            {c.rig
+              ? c.frozen
+                ? l('重新拍一张', 'Retake photo')
+                : l('按下快门', 'Take photo')
+              : tr(c.frozen ? '重新确认这一帧' : '就这一帧')}{' '}
+            <span>⌁</span>
           </button>
           {c.frozen && (
             <div className="intent-block">
@@ -266,8 +394,8 @@ export function CropEditor({
       </div>
       <p className="photo-disclosure">
         {l(
-          '场景为 AI 生成的写实练习素材，人物为虚构；机位切换使用不同视角素材，拖动与缩放调整当前画幅。只记录你最终确认的一张。',
-          'Scenes are AI-generated with fictional people. Camera choices switch between prepared viewpoints; dragging and zooming adjust the current frame. Only your final confirmed frame is recorded.',
+          '三维模型摄影练习，人物为虚构。走动改变机位与透视，拖动转动镜头，焦距改变视角；按快门保存最终画面。旧版记录仍保留原照片。',
+          'A 3D model photography exercise with a fictional subject. Walking changes perspective; dragging aims the camera and focal length changes the field of view. The shutter saves your final frame. Earlier records retain their original photos.',
         )}
       </p>
     </div>

@@ -1,3 +1,4 @@
+import { renderPhotoWorld } from './photoWorld.ts';
 import { photoSource } from './photoScenarios.ts';
 import { editorialCard } from './cardDesigns.ts';
 import { CARD_PALETTES, type CardPalette } from './cardProfile.ts';
@@ -51,6 +52,7 @@ ${rect(111, 668, 60, 99, '#aa7253')}<path d="M141 681V540M142 608Q75 577 83 533Q
 }
 export const streetSVG = () => svg(1200, 900, streetBody());
 export function cropSVG(c: Crop) {
+  if (c.rig) return renderPhotoWorld(c);
   const r = cropRect(c);
   const source = photoSource(c);
   const body = source

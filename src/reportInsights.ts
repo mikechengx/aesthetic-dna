@@ -254,7 +254,39 @@ export function personalReport(
     );
   }
   const c = s.answers.q05;
-  if (c?.type === 'crop' && c.value.frozen) {
+  if (c?.type === 'crop' && c.value.frozen && c.value.rig) {
+    const v = c.value,
+      rig = v.rig!;
+    insights.push(
+      point(
+        'crop',
+        l('这一张，是你走出来的视角。', 'You walked into this point of view.'),
+        l(
+          `在${photoScene(v)?.name}，你从「${photoView(v)?.name}」出发，把相机放在 ${rig.height.toFixed(2)} m 高度，站位 X ${rig.x.toFixed(1)} / Z ${rig.z.toFixed(1)} m，使用 ${Math.round(28 * v.zoom)} mm 焦距与 ${v.ratio} 画幅。你希望「${v.intent}」。这些是你的拍摄决定，不直接等同于审美能力或人格。`,
+          `In ${photoScene(v)?.english}, you started from ${photoView(v)?.english.toLowerCase()}. Your camera is ${rig.height.toFixed(2)} m high at X ${rig.x.toFixed(1)} / Z ${rig.z.toFixed(1)} m, using a ${Math.round(28 * v.zoom)} mm lens and ${v.ratio} frame. Your intention: “${translate('en', v.intent)}”. These are observed shooting decisions, not a score of ability or personality.`,
+        ),
+        ['q05-crop'],
+        'creation',
+        {
+          metric: `${Math.round(28 * v.zoom)} mm`,
+          metricLabel: l('拍摄焦距', 'shooting focal length'),
+        },
+      ),
+    );
+    nextSteps.push(
+      point(
+        'frame-practice',
+        l('换个站位，再拍一次。', 'Walk somewhere else. Shoot again.'),
+        l(
+          '保留焦距，走到人物另一侧；观察人物与地标的遮挡、间隔和大小怎样变化，再决定哪张更接近你的意图。',
+          'Keep the lens and walk to the other side of the person. Compare overlap, separation and scale before deciding which photograph tells your story.',
+        ),
+        ['q05-crop'],
+        'creation',
+      ),
+    );
+  }
+  if (c?.type === 'crop' && c.value.frozen && !c.value.rig) {
     const rect = cropRect(c.value),
       kept = Math.round(((rect.w * rect.h) / 1080000) * 100);
     insights.push(

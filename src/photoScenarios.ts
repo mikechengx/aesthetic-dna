@@ -1,3 +1,4 @@
+import { CAMERA_POSITIONS } from './photoWorld.ts';
 import PHOTOS from './assets/photos.json' with { type: 'json' };
 import type { Crop } from './core.ts';
 export type SceneId = 'shanghai' | 'coast' | 'mountains';
@@ -65,7 +66,17 @@ export const PHOTO_SCENES = [
 export function photoScene(c: Pick<Crop, 'scene'>) {
   return PHOTO_SCENES.find((s) => s.id === c.scene);
 }
-export function photoView(c: Pick<Crop, 'scene' | 'camera'>) {
+export function photoView(c: Pick<Crop, 'scene' | 'camera' | 'rig'>) {
+  if (c.rig) {
+    const p = CAMERA_POSITIONS.find((p) => p.id === c.camera) ?? CAMERA_POSITIONS[0];
+    return {
+      id: p.id,
+      name: p.zh,
+      english: p.en,
+      note: '自主移动机位',
+      noteEn: 'Your own camera position',
+    };
+  }
   const scene = photoScene(c);
   return scene?.viewpoints.find((v) => v.id === c.camera) ?? scene?.viewpoints[0];
 }

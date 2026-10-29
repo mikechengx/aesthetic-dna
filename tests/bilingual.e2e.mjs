@@ -55,7 +55,7 @@ for (let step = 2; step <= 16; step++) {
   if (step === 5) {
     await page.getByLabel('Frame zoom').fill('1.8');
     await page.getByRole('button', { name: '16:9', exact: true }).click();
-    await page.getByRole('button', { name: /Keep this frame/ }).click();
+    await page.getByRole('button', { name: /(Keep this frame|Take photo)/ }).click();
     await page.getByRole('button', { name: 'Keep the scene’s story', exact: true }).click();
     await page.getByRole('button', { name: '中文', exact: true }).click();
     assert.equal(await page.getByLabel('取景缩放').inputValue(), '1.8');

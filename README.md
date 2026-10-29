@@ -105,3 +105,7 @@ The photography exercise uses four AI-generated realistic images, with fictional
 Movie posters belong to their respective rights holders. This repository stores metadata and official image links, **not copies of movie poster binaries**, and does not grant rights to redistribute or commercially reuse them. Film origin labels identify the film, not a claimed poster edition or aesthetic score. Source details are in [ASSETS.md](ASSETS.md).
 
 The README preview uses fictional test sessions and original graphics and AI-generated fictional photographic scenes only; it does not contain third-party movie posters or real user data.
+
+### Shoot your own frame
+
+The photography exercise now uses a shared 3D scene with eight starting positions in each location. Walk left/right/forward/back, change camera height, drag to aim, choose a 28–84 mm lens and release the shutter. Moving changes perspective and occlusion; focus choices record an intention without composing the shot for you. The simplified model scene renders locally and exports offline. Reports describe saved camera settings; earlier photo-crop records remain readable and offer an explicit switch to the new exercise.

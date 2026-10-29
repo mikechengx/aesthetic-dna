@@ -1,3 +1,4 @@
+import type { CameraRig } from './photoWorld.ts';
 import { photoScene, photoView } from './photoScenarios.ts';
 import { choiceReason } from './questionDetails.ts';
 import {
@@ -11,7 +12,8 @@ import {
 import { POSTERS } from './posters.ts';
 export type Crop = {
   scene?: 'shanghai' | 'coast' | 'mountains';
-  camera?: 'eye' | 'low';
+  camera?: 'eye' | 'low' | 'ground' | 'high' | 'left' | 'right' | 'near' | 'far';
+  rig?: CameraRig;
   ratio: string;
   zoom: number;
   panX: number;
@@ -177,7 +179,9 @@ export function extract(s: Session): Evidence[] {
       e.push({
         id: q.id + '-crop',
         questionId: q.id,
-        fact: `${photoScene(a.value) ? `你在「${photoScene(a.value)!.name}」选择了「${photoView(a.value)!.name}」。` : ''}你使用 ${a.value.ratio} 画幅，保留原场景约 ${Math.round(((r.w * r.h) / 1080000) * 100)}% 的面积${a.value.intent ? `，想要「${a.value.intent}」` : ''}。`,
+        fact: a.value.rig
+          ? `你在${photoScene(a.value)?.name ?? '三维场景'}自主拍摄，相机高度 ${a.value.rig.height.toFixed(2)} m，站位 X ${a.value.rig.x.toFixed(1)} / Z ${a.value.rig.z.toFixed(1)} m，焦距 ${Math.round(28 * a.value.zoom)} mm，${a.value.ratio} 画幅，意图「${a.value.intent}」。`
+          : `${photoScene(a.value) ? `你在「${photoScene(a.value)!.name}」选择了「${photoView(a.value)!.name}」。` : ''}你使用 ${a.value.ratio} 画幅，保留原场景约 ${Math.round(((r.w * r.h) / 1080000) * 100)}% 的面积${a.value.intent ? `，想要「${a.value.intent}」` : ''}。`,
       });
     }
     if (a.type === 'palette')

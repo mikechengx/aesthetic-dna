@@ -631,3 +631,39 @@
     font-size: 11px;
   }
 }
+.camera-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.camera-options button {
+  min-height: 44px;
+}
+.camera-walk {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.camera-walk button {
+  min-height: 44px;
+  border: 1px solid #ccd2e6;
+  background: #ecefff;
+  color: #204be9;
+  font-size: 20px;
+}
+.focus-hint {
+  display: block;
+  margin-top: 8px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+.photo-upgrade {
+  padding: 18px;
+  border: 1px solid #ccd2e6;
+  background: #eef2ff;
+  margin-bottom: 18px;
+}
+.photo-upgrade p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}

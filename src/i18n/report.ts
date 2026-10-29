@@ -30,7 +30,9 @@ function baseLocalizedReport(
       fact = `You would hang ${a.value.ids.map((id) => POSTERS.find((p) => p.id === id)?.titleEn ?? id).join(', ')}.${a.value.why ? ` What caught your eye: ${t(a.value.why)}.` : ''} This records whole-poster preference, not a single color or composition skill.`;
     if (a.type === 'crop') {
       const rect = cropRect(a.value);
-      fact = `${photoScene(a.value) ? `Scene: ${photoScene(a.value)!.english}. Viewpoint: ${photoView(a.value)!.english}. ` : ''}You used a ${a.value.ratio} frame, keeping about ${Math.round(((rect.w * rect.h) / 1080000) * 100)}% of the scene.${a.value.intent ? ` Your intention: ${t(a.value.intent)}.` : ''}`;
+      fact = a.value.rig
+        ? `You photographed ${photoScene(a.value)?.english ?? 'a 3D scene'} from height ${a.value.rig.height.toFixed(2)} m, position X ${a.value.rig.x.toFixed(1)} / Z ${a.value.rig.z.toFixed(1)} m, with a ${Math.round(28 * a.value.zoom)} mm lens and ${a.value.ratio} frame. Intention: ${t(a.value.intent)}.`
+        : `${photoScene(a.value) ? `Scene: ${photoScene(a.value)!.english}. Viewpoint: ${photoView(a.value)!.english}. ` : ''}You used a ${a.value.ratio} frame, keeping about ${Math.round(((rect.w * rect.h) / 1080000) * 100)}% of the scene.${a.value.intent ? ` Your intention: ${t(a.value.intent)}.` : ''}`;
     }
     if (a.type === 'palette')
       fact = `For “quiet, never boring,” you assigned your three colors ${a.value.areas.join(' / ')} percent of the space.`;

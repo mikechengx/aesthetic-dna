@@ -36,6 +36,13 @@ await p.locator('[data-reason=room-focus]').click();
 await p.getByRole('button', { name: 'Keep this choice' }).click();
 await p.getByRole('button', { name: 'Skip for now' }).click();
 assert.equal(await p.locator('[data-scene]').count(), 3);
+assert.equal(await p.locator('[data-camera]').count(), 8);
+const originalSource = await p.locator('.crop-frame img').getAttribute('src');
+await p.getByRole('button', { name: 'Walk ←', exact: true }).click();
+assert.notEqual(await p.locator('.crop-frame img').getAttribute('src'), originalSource);
+await p.getByLabel('Camera height', { exact: true }).fill('3.2');
+await p.reload();
+assert.equal(await p.getByLabel('Camera height', { exact: true }).inputValue(), '3.2');
 await p.locator('[data-camera=low]').click();
 const lowSource = await p.locator('.crop-frame img').getAttribute('src');
 await p.locator('[data-camera=eye]').click();
@@ -43,14 +50,18 @@ assert.notEqual(await p.locator('.crop-frame img').getAttribute('src'), lowSourc
 await p.locator('[data-camera=low]').click();
 await p.locator('[data-framing=story]').click();
 await p.getByRole('button', { name: '中文', exact: true }).click();
-await p.locator('[data-camera=low]').filter({ hasText: '低机位 · 向上看' }).waitFor();
+await p.locator('[data-camera=low]').filter({ hasText: '蹲下仰拍' }).waitFor();
 assert.equal(await p.locator('[data-camera=low]').getAttribute('aria-pressed'), 'true');
 await p.screenshot({ path: 'test-results/photo-studio-zh.png', fullPage: true });
 await p.getByRole('button', { name: 'EN', exact: true }).click();
 for (const scene of ['coast', 'mountains']) {
   await p.locator(`[data-scene=${scene}]`).click();
-  assert.equal(await p.locator('[data-camera=low]').count(), 0);
+  assert.equal(await p.locator('[data-camera]').count(), 8);
   await p.locator('[data-framing=landscape]').click();
+  await p
+    .locator('.ratios button')
+    .filter({ hasText: /^16:9$/ })
+    .click();
   assert.equal(await p.locator('.ratios button.active').innerText(), '16:9');
 }
 await p.reload();
@@ -59,11 +70,11 @@ assert.equal(await p.locator('.ratios button.active').innerText(), '16:9');
 await p.locator('[data-scene=shanghai]').click();
 await p.locator('[data-camera=low]').click();
 await p.locator('[data-framing=story]').click();
-await p.getByRole('button', { name: /Keep this frame/ }).click();
+await p.getByRole('button', { name: /(Keep this frame|Take photo)/ }).click();
 await p.getByLabel('Frame zoom').fill('1.25');
 assert.equal(await p.locator('.crop-frame.is-frozen').count(), 0);
 assert.equal(await p.getByRole('button', { name: 'Keep this choice' }).isEnabled(), false);
-await p.getByRole('button', { name: /Keep this frame/ }).click();
+await p.getByRole('button', { name: /(Keep this frame|Take photo)/ }).click();
 await p.setViewportSize({ width: 390, height: 844 });
 await p
   .locator('.photo-control-nav button')
@@ -101,7 +112,7 @@ await p
   .locator('.photo-control-nav button')
   .filter({ hasText: /^Frame$/ })
   .click();
-await p.getByRole('button', { name: /Keep this frame/ }).click();
+await p.getByRole('button', { name: /(Keep this frame|Take photo)/ }).click();
 assert.equal(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
 await p.screenshot({ path: 'test-results/photo-studio-mobile.png', fullPage: true });
 await p.setViewportSize({ width: 1440, height: 1100 });
@@ -112,7 +123,7 @@ await p.locator('[data-personal-report]').waitFor();
 await p.getByRole('heading', { name: 'Make it clear. Let the focal point shine.' }).waitFor();
 await p.locator('[data-insight=motive]').waitFor();
 await p.locator('[data-insight=crop]').waitFor();
-assert.match(await p.locator('[data-insight=crop]').innerText(), /low angle/);
+assert.match(await p.locator('[data-insight=crop]').innerText(), /crouch/);
 assert.doesNotMatch(await p.locator('main').innerText(), /[\u3400-\u9fff]/);
 await p
   .locator('[data-personal-report]')

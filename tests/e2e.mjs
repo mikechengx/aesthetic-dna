@@ -48,7 +48,7 @@ for (let step = 2; step <= 16; step++) {
   if (step === 5) {
     await page.getByLabel('取景缩放').fill('1.8');
     await page.getByRole('button', { name: '16:9', exact: true }).click();
-    await page.getByRole('button', { name: /^就这一帧/ }).click();
+    await page.getByRole('button', { name: /^(就这一帧|按下快门)/ }).click();
     await page.getByRole('button', { name: '保留现场故事', exact: true }).click();
     await page.screenshot({ path: resolve(results, 'crop.png'), fullPage: true });
   } else if (step === 8) {
@@ -125,7 +125,7 @@ await page.getByText('15 / 16 步已作答', { exact: true }).waitFor();
 console.log('answer revision updates report');
 await page.getByRole('button', { name: /做一张练习副本/ }).click();
 await page.getByRole('dialog', { name: '取景练习副本' }).waitFor();
-await page.getByRole('button', { name: /^就这一帧/ }).click();
+await page.getByRole('button', { name: /^(就这一帧|按下快门)/ }).click();
 console.log('practice reachable');
 await page.getByRole('button', { name: '关闭练习' }).click();
 await page.setViewportSize({ width: 1440, height: 1000 });
