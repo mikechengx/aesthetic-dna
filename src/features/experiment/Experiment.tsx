@@ -31,6 +31,16 @@ export function PairQuestion({
   const choices = flip ? [...base].reverse() : base;
   return (
     <>
+      <div className="choice-instruction">
+        <strong>{locale === 'en' ? 'Which one draws you in?' : '哪一个更吸引你？'}</strong>
+        <span role="status" aria-live="polite">
+          {choices.includes(value as VisualChoice)
+            ? `${locale === 'en' ? 'Selected' : '已选择'} ${String.fromCharCode(65 + choices.indexOf(value as VisualChoice))}`
+            : locale === 'en'
+              ? 'Tap an image to choose'
+              : '点击画面选择'}
+        </span>
+      </div>
       <div className={`pair-grid ${q.colorVariants ? 'four-choices' : ''}`}>
         {choices.map((side, i) => (
           <button
@@ -46,6 +56,11 @@ export function PairQuestion({
             data-choice={side}
             aria-pressed={value === side}
           >
+            {value === side && (
+              <span className="choice-selected-badge" aria-hidden="true">
+                ✓ {locale === 'en' ? 'Selected' : '已选择'}
+              </span>
+            )}
             <Art
               source={pairSVG(q.art!, side, locale)}
               alt={tr(
@@ -152,6 +167,7 @@ export function Observe({
           <button
             key={t}
             className={initial?.type === 'observe' && initial.value === i ? 'active' : ''}
+            aria-pressed={initial?.type === 'observe' && initial.value === i}
             onClick={() => onChange({ type: 'observe', value: i })}
           >
             <span>0{tr(i + 1)}</span>

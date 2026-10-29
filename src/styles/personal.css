@@ -420,3 +420,214 @@
   width: 100%;
   height: 100%;
 }
+
+/* Keep the frame and its active tool together on small screens. */
+.photo-control-nav {
+  display: none;
+}
+.photo-control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.choice-instruction {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+.choice-instruction > span {
+  color: #1746c2;
+  font-weight: 700;
+}
+.visual-choice {
+  position: relative;
+  border: 2px solid #c6cdd5;
+}
+.visual-choice.selected {
+  border: 3px solid #204be9;
+  box-shadow: 0 0 0 3px #204be91a;
+}
+.visual-choice.selected .choice-caption {
+  background: #eaf0ff;
+  color: #163cab;
+}
+.choice-selected-badge {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: #204be9;
+  color: white;
+  font-size: 12px;
+  font-weight: 750;
+  box-shadow: 0 2px 12px #12204b33;
+}
+.visual-choice .choice-caption {
+  min-height: 50px;
+  font-size: 13px;
+  padding: 12px 14px;
+}
+.visual-choice .choice-caption > span:first-child {
+  font-size: 16px;
+  font-weight: 800;
+}
+.neutral-choices button,
+.reason-options button,
+.observe-options button {
+  min-height: 44px;
+  border-color: #9da8b4;
+  color: #263443;
+}
+.reason-options button.active,
+.observe-options button.active,
+.neutral-choices button.active {
+  background: #eaf0ff;
+  border-color: #204be9;
+  color: #173eae;
+  box-shadow: inset 0 0 0 1px #204be9;
+}
+@media (max-width: 760px) {
+  .photo-experiment {
+    --photo-preview-height: min(34svh, 280px);
+  }
+  .photo-experiment .studio {
+    gap: 8px;
+    padding: 10px;
+  }
+  .photo-experiment .studio-canvas {
+    padding: 10px;
+  }
+  .photo-experiment .crop-frame {
+    max-height: none;
+  }
+  .photo-experiment .canvas-caption {
+    margin-top: 8px;
+    font-size: 10px;
+  }
+  .photo-experiment .studio-controls {
+    margin-top: 0;
+    padding: 0;
+    gap: 10px;
+  }
+  .photo-control-nav {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 4px;
+    padding: 4px;
+    background: #e9edf3;
+    border-radius: 9px;
+  }
+  .photo-control-nav button {
+    min-height: 42px;
+    border: 0;
+    background: transparent;
+    color: #394656;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .photo-control-nav button[aria-pressed='true'] {
+    background: #204be9;
+    color: white;
+    box-shadow: 0 2px 5px #204be92a;
+  }
+  .photo-control-panel {
+    gap: 9px;
+  }
+  .studio-controls[data-active-panel='frame'] .photo-control-panel:not([data-panel='frame']),
+  .studio-controls[data-active-panel='camera'] .photo-control-panel:not([data-panel='camera']),
+  .studio-controls[data-active-panel='focus'] .photo-control-panel:not([data-panel='focus']) {
+    display: none;
+  }
+  .photo-experiment .ratios button,
+  .photo-experiment .move-controls button {
+    min-height: 42px;
+  }
+  .photo-experiment .range-label {
+    margin: 0;
+  }
+  .photo-experiment .range-label input {
+    min-height: 24px;
+    margin-top: 4px;
+  }
+  .photo-experiment .checkbox {
+    min-height: 32px;
+  }
+  .photo-brief {
+    margin: 18px 0;
+  }
+  .photo-brief h2 {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+  .photo-brief p {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .question-heading h1 {
+    font-size: clamp(27px, 7vw, 34px);
+    line-height: 1.25;
+    color: #172333;
+    font-weight: 750;
+  }
+  .question-heading p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #485565;
+  }
+  .choice-instruction {
+    align-items: flex-start;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .choice-instruction > span {
+    text-align: right;
+  }
+  .visual-choice .choice-caption {
+    padding: 11px 10px;
+    font-size: 12px;
+    gap: 8px;
+  }
+  .choice-selected-badge {
+    top: 8px;
+    right: 8px;
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .reason-options button,
+  .neutral-choices button,
+  .observe-options button {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+}
+@media (max-width: 760px) {
+  .photo-experiment .canvas-caption {
+    width: 100%;
+    line-height: 1.5;
+  }
+  .photo-control-panel[data-panel='frame'] {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+  }
+  .photo-control-panel[data-panel='frame'] .range-label,
+  .photo-control-panel[data-panel='frame'] .move-controls,
+  .photo-control-panel[data-panel='frame'] .checkbox {
+    grid-column: 1 / -1;
+  }
+  .photo-control-panel[data-panel='frame'] .control-heading {
+    gap: 6px;
+    font-size: 11px;
+  }
+  .photo-control-panel[data-panel='frame'] .ratios button {
+    padding: 8px 4px;
+    font-size: 11px;
+  }
+}

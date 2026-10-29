@@ -32,6 +32,7 @@ export function CropEditor({
   const scene = photoScene(c),
     view = photoView(c);
   const [grid, setGrid] = useState(true);
+  const [panel, setPanel] = useState<'frame' | 'camera' | 'focus'>('frame');
   const drag = useRef<{ x: number; y: number } | null>(null);
   const change = (p: Partial<Crop>) => setC((old) => ({ ...old, ...p, frozen: false }));
   const aspect = c.ratio
@@ -77,7 +78,10 @@ export function CropEditor({
         <div className="studio-canvas">
           <div
             className={`crop-frame ${c.frozen ? 'is-frozen' : ''}`}
-            style={{ aspectRatio: aspect, width: `min(100%, ${aspect * 520}px)` }}
+            style={{
+              aspectRatio: aspect,
+              width: `min(100%, calc(${aspect} * var(--photo-preview-height, 520px)))`,
+            }}
             onPointerDown={(e) => {
               if (c.frozen) return;
               e.currentTarget.setPointerCapture(e.pointerId);
@@ -116,102 +120,127 @@ export function CropEditor({
             {tr(c.frozen ? '已定格' : '拖动画面，寻找你的视角')}
           </span>
         </div>
-        <div className="studio-controls">
-          {scene && (
-            <>
-              <div className="control-heading">
-                <span>{l('机位素材', 'Camera viewpoint')}</span>
-                <small>{l('切换原始视角', 'Change the source view')}</small>
-              </div>
-              <div className="camera-options">
-                {scene.viewpoints.map((v) => (
-                  <button
-                    key={v.id}
-                    data-camera={v.id}
-                    className={view?.id === v.id ? 'active' : ''}
-                    aria-pressed={view?.id === v.id}
-                    onClick={() => setC({ ...defaultCrop(), scene: scene.id, camera: v.id })}
-                  >
-                    {l(v.name, v.english)}
-                    <span>{view?.id === v.id ? '●' : '○'}</span>
-                  </button>
-                ))}
-              </div>
-              <p className="camera-note">{view ? l(view.note, view.noteEn) : ''}</p>
-              <span className="control-title">
-                {l('这张图，你想突出哪里？', 'What should this frame emphasize?')}
-              </span>
-              <div className="framing-presets">
-                {framingPresets(c).map((p) => (
-                  <button key={p.id} data-framing={p.id} onClick={() => change(p.crop)}>
-                    <span>{l(p.name, p.english)}</span>
-                    <i>↗</i>
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-          <div className="control-heading">
-            <span>{tr('画幅比例')}</span>
-            <button
-              className="text-button"
-              onClick={() => setC({ ...defaultCrop(), scene: c.scene, camera: c.camera })}
-            >
-              {tr('重置 ↻')}
-            </button>
-          </div>
-          <div className="segmented ratios">
-            {['1:1', '4:3', '16:9', '9:16'].map((r) => (
+        <div className="studio-controls" data-active-panel={panel}>
+          <div
+            className="photo-control-nav"
+            aria-label={l('摄影调整工具', 'Photo adjustment tools')}
+          >
+            {(['frame', ...(scene ? ['camera', 'focus'] : [])] as const).map((id) => (
               <button
-                key={r}
-                className={c.ratio === r ? 'active' : ''}
-                onClick={() => change({ ratio: r })}
+                key={id}
+                aria-pressed={panel === id}
+                onClick={() => setPanel(id as typeof panel)}
               >
-                {tr(r)}
+                {id === 'frame'
+                  ? l('取景', 'Frame')
+                  : id === 'camera'
+                    ? l('机位', 'Camera')
+                    : l('重点', 'Focus')}
               </button>
             ))}
           </div>
-          <label className="range-label">
-            {tr('靠近一点')}
-            <span>{tr(c.zoom.toFixed(1))}×</span>
-            <input
-              aria-label={tr('取景缩放')}
-              type="range"
-              min="1"
-              max="3"
-              step="0.05"
-              value={c.zoom}
-              onChange={(e) => change({ zoom: +e.target.value })}
-            />
-          </label>
-          <div className="move-controls">
-            <span>{tr('移动取景')}</span>
-            <div>
-              {[
-                ['←', -0.08, 0],
-                ['↑', 0, -0.08],
-                ['↓', 0, 0.08],
-                ['→', 0.08, 0],
-              ].map(([t, x, y]) => (
+          {scene && (
+            <>
+              <div className="photo-control-panel" data-panel="camera">
+                <div className="control-heading">
+                  <span>{l('机位素材', 'Camera viewpoint')}</span>
+                  <small>{l('切换原始视角', 'Change the source view')}</small>
+                </div>
+                <div className="camera-options">
+                  {scene.viewpoints.map((v) => (
+                    <button
+                      key={v.id}
+                      data-camera={v.id}
+                      className={view?.id === v.id ? 'active' : ''}
+                      aria-pressed={view?.id === v.id}
+                      onClick={() => setC({ ...defaultCrop(), scene: scene.id, camera: v.id })}
+                    >
+                      {l(v.name, v.english)}
+                      <span>{view?.id === v.id ? '●' : '○'}</span>
+                    </button>
+                  ))}
+                </div>
+                <p className="camera-note">{view ? l(view.note, view.noteEn) : ''}</p>
+              </div>
+              <div className="photo-control-panel" data-panel="focus">
+                <span className="control-title">
+                  {l('这张图，你想突出哪里？', 'What should this frame emphasize?')}
+                </span>
+                <div className="framing-presets">
+                  {framingPresets(c).map((p) => (
+                    <button key={p.id} data-framing={p.id} onClick={() => change(p.crop)}>
+                      <span>{l(p.name, p.english)}</span>
+                      <i>↗</i>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+          <div className="photo-control-panel" data-panel="frame">
+            <div className="control-heading">
+              <span>{tr('画幅比例')}</span>
+              <button
+                className="text-button"
+                onClick={() => setC({ ...defaultCrop(), scene: c.scene, camera: c.camera })}
+              >
+                {tr('重置 ↻')}
+              </button>
+            </div>
+            <div className="segmented ratios">
+              {['1:1', '4:3', '16:9', '9:16'].map((r) => (
                 <button
-                  key={t}
-                  aria-label={tr(`取景${t}`)}
-                  onClick={() =>
-                    change({
-                      panX: clamp(c.panX + Number(x), 0, 1),
-                      panY: clamp(c.panY + Number(y), 0, 1),
-                    })
-                  }
+                  key={r}
+                  className={c.ratio === r ? 'active' : ''}
+                  aria-pressed={c.ratio === r}
+                  onClick={() => change({ ratio: r })}
                 >
-                  {tr(t)}
+                  {tr(r)}
                 </button>
               ))}
             </div>
+            <label className="range-label">
+              {tr('靠近一点')}
+              <span>{tr(c.zoom.toFixed(1))}×</span>
+              <input
+                aria-label={tr('取景缩放')}
+                type="range"
+                min="1"
+                max="3"
+                step="0.05"
+                value={c.zoom}
+                onChange={(e) => change({ zoom: +e.target.value })}
+              />
+            </label>
+            <div className="move-controls">
+              <span>{tr('移动取景')}</span>
+              <div>
+                {[
+                  ['←', -0.08, 0],
+                  ['↑', 0, -0.08],
+                  ['↓', 0, 0.08],
+                  ['→', 0.08, 0],
+                ].map(([t, x, y]) => (
+                  <button
+                    key={t}
+                    aria-label={tr(`取景${t}`)}
+                    onClick={() =>
+                      change({
+                        panX: clamp(c.panX + Number(x), 0, 1),
+                        panY: clamp(c.panY + Number(y), 0, 1),
+                      })
+                    }
+                  >
+                    {tr(t)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <label className="checkbox">
+              <input type="checkbox" checked={grid} onChange={(e) => setGrid(e.target.checked)} />
+              {tr('显示三分辅助线')}
+            </label>
           </div>
-          <label className="checkbox">
-            <input type="checkbox" checked={grid} onChange={(e) => setGrid(e.target.checked)} />
-            {tr('显示三分辅助线')}
-          </label>
           <button className="primary" onClick={() => setC((o) => ({ ...o, frozen: true }))}>
             {tr(c.frozen ? '重新确认这一帧' : '就这一帧')} <span>⌁</span>
           </button>
@@ -222,6 +251,7 @@ export function CropEditor({
                 {INTENTS.map((t) => (
                   <button
                     className={c.intent === t ? 'active' : ''}
+                    aria-pressed={c.intent === t}
                     key={t}
                     onClick={() => setC((o) => ({ ...o, intent: t }))}
                   >

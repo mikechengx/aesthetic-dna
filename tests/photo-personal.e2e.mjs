@@ -19,6 +19,8 @@ await p.goto('http://127.0.0.1:5173');
 await p.getByRole('button', { name: 'See my Aesthetic DNA' }).click();
 await p.getByRole('button', { name: 'Skip for now' }).click();
 await p.locator('[data-choice=a]').click();
+assert.equal(await p.locator('.choice-selected-badge').count(), 1);
+assert.match(await p.getByRole('status').innerText(), /Selected [AB]/);
 await p.locator('[data-reason=read-first]').click();
 await p.reload();
 await p.locator('[data-reason=read-first][aria-pressed=true]').waitFor();
@@ -63,6 +65,43 @@ assert.equal(await p.locator('.crop-frame.is-frozen').count(), 0);
 assert.equal(await p.getByRole('button', { name: 'Keep this choice' }).isEnabled(), false);
 await p.getByRole('button', { name: /Keep this frame/ }).click();
 await p.setViewportSize({ width: 390, height: 844 });
+await p
+  .locator('.photo-control-nav button')
+  .filter({ hasText: /^Frame$/ })
+  .click();
+assert.equal(await p.locator('[data-panel=camera]').isVisible(), false);
+assert.equal(await p.locator('[data-panel=focus]').isVisible(), false);
+await p
+  .locator('.ratios button')
+  .filter({ hasText: /^9:16$/ })
+  .click();
+await p.locator('.studio.crop-studio').scrollIntoViewIfNeeded();
+const geometry = await p.evaluate(() => {
+  const frame = document.querySelector('.crop-frame').getBoundingClientRect();
+  const zoom = document.querySelector('.range-label input').getBoundingClientRect();
+  return { ratio: frame.width / frame.height, height: frame.height, gap: zoom.top - frame.bottom };
+});
+assert.ok(Math.abs(geometry.ratio - 9 / 16) < 0.01, JSON.stringify(geometry));
+assert.ok(geometry.height <= 281, JSON.stringify(geometry));
+assert.ok(geometry.gap < 210, JSON.stringify(geometry));
+await p.getByLabel('Frame zoom').fill('1.5');
+await p
+  .locator('.photo-control-nav button')
+  .filter({ hasText: /^Camera$/ })
+  .click();
+assert.equal(await p.locator('[data-panel=frame]').isVisible(), false);
+await p.locator('[data-camera=eye]').click();
+await p.locator('[data-camera=low]').click();
+await p
+  .locator('.photo-control-nav button')
+  .filter({ hasText: /^Focus$/ })
+  .click();
+await p.locator('[data-framing=story]').click();
+await p
+  .locator('.photo-control-nav button')
+  .filter({ hasText: /^Frame$/ })
+  .click();
+await p.getByRole('button', { name: /Keep this frame/ }).click();
 assert.equal(await p.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
 await p.screenshot({ path: 'test-results/photo-studio-mobile.png', fullPage: true });
 await p.setViewportSize({ width: 1440, height: 1100 });
