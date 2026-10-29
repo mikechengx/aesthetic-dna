@@ -2,7 +2,7 @@
 
 **你的目光，自有主张。**
 
-[English](README.md) · [架构说明](docs/ARCHITECTURE.md) · [素材与来源](ASSETS.md)
+[直接体验](https://mikechengx.github.io/aesthetic-dna/) · [English](README.md) · [架构说明](docs/ARCHITECTURE.md) · [素材与来源](ASSETS.md)
 
 一个通过选择与创作观察个人视觉偏好的小实验。从真实电影海报出发，探索构图、建筑、服装、配色和排版，最后生成包含「你的侧重、创作思路、创作气质」的审美档案，并保存一张有设计感的结果卡。
 

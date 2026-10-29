@@ -2,7 +2,7 @@
 
 **Your eyes. Your rules. Your DNA.**
 
-[简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Artwork & sources](ASSETS.md)
+[Open the live website](https://mikechengx.github.io/aesthetic-dna/) · [简体中文](README.zh-CN.md) · [Architecture](docs/ARCHITECTURE.md) · [Artwork & sources](ASSETS.md)
 
 A playful, browser-based experiment about how you see the world. Choose real movie posters, frame a realistic person or landscape, build a color story and compose a screening poster. Your choices become an evidence-based visual portrait with an editorial card to keep.
 
