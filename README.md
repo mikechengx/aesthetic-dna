@@ -109,3 +109,13 @@ The README preview uses fictional test sessions and original graphics and AI-gen
 ### Shoot your own frame
 
 The photography exercise now uses a shared 3D scene with eight starting positions in each location. Walk left/right/forward/back, change camera height, drag to aim, choose a 28–84 mm lens and release the shutter. Moving changes perspective and occlusion; focus choices record an intention without composing the shot for you. The simplified model scene renders locally and exports offline. Reports describe saved camera settings; earlier photo-crop records remain readable and offer an explicit switch to the new exercise.
+
+## License / 开源许可
+
+Original application code is released under the [MIT License](LICENSE).
+Movie posters and other third-party materials retain their existing rights;
+see [Artwork and source references](ASSETS.md). The MIT license does not grant
+rights to those materials or imply endorsement by their rights holders.
+
+原创应用代码采用 [MIT License](LICENSE)。电影海报与第三方素材仍按原有权利和许可使用，
+详见 [素材说明](ASSETS.md)；本项目的 MIT 许可不授予这些素材的权利。
